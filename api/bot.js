@@ -1,26 +1,21 @@
-import fetch from "node-fetch";
-
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN; // 你的 bot token
-
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(200).send("Bot is running");
-  }
+  if (req.method !== "POST") return res.status(200).send("Bot running");
 
-  const body = req.body;
+  let body;
+  try {
+    body = typeof req.body === "object" ? req.body : JSON.parse(req.body);
+  } catch (e) {
+    return res.status(400).send("Invalid JSON");
+  }
 
   if (body.message && body.message.text) {
     const chatId = body.message.chat.id;
     const text = body.message.text;
 
-    // 回复消息
     await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: `你发的消息是: ${text}`
-      })
+      body: JSON.stringify({ chat_id: chatId, text: `你发的消息是: ${text}` })
     });
   }
 
