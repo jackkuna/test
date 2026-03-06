@@ -1,6 +1,5 @@
 {
-  "scripts": {
-    "build": "vite build",
-    "preview": "vite preview"
-  }
+  "name": "test-vercel",
+  "version": "1.0.0",
+  "type": "module"
 }
