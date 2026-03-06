@@ -2,7 +2,7 @@ const https = require("https");
 
 module.exports = async (req, res) => {
 
-  // 直接写死你的 Bot Token
+  // 直接写死你的 Bot Token试试 
   const TELEGRAM_TOKEN = "6055255911:AAHBLN50Aye0j7Lrmn-EqnsIuf4dVDUkPz4";
 
   if (req.method !== "POST") {
