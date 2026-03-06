@@ -1,24 +1,24 @@
-import https from "https";
+const https = require("https");
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
+module.exports = async (req, res) => {
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(200).send("Bot running");
+  const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 
-  let body;
-  try {
-    body = typeof req.body === "object" ? req.body : JSON.parse(req.body);
-  } catch (e) {
-    return res.status(400).send("Invalid JSON");
+  if (req.method !== "POST") {
+    res.status(200).send("Bot running");
+    return;
   }
 
+  const body = req.body;
+
   if (body.message && body.message.text) {
+
     const chatId = body.message.chat.id;
     const text = body.message.text;
 
     const data = JSON.stringify({
       chat_id: chatId,
-      text: `你发的消息是: ${text}`
+      text: "你发的消息是: " + text
     });
 
     const options = {
@@ -31,17 +31,10 @@ export default async function handler(req, res) {
       }
     };
 
-    const request = https.request(options, (response) => {
-      response.on("data", () => {}); // 忽略返回内容
-    });
-
-    request.on("error", (error) => {
-      console.error(error);
-    });
-
+    const request = https.request(options);
     request.write(data);
     request.end();
   }
 
   res.status(200).json({ ok: true });
-}
+};
