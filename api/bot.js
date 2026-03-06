@@ -1,3 +1,7 @@
+import https from "https";
+
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(200).send("Bot running");
 
@@ -12,11 +16,31 @@ export default async function handler(req, res) {
     const chatId = body.message.chat.id;
     const text = body.message.text;
 
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: `你发的消息是: ${text}` })
+    const data = JSON.stringify({
+      chat_id: chatId,
+      text: `浣犲彂鐨勬秷鎭槸: ${text}`
     });
+
+    const options = {
+      hostname: "api.telegram.org",
+      path: `/bot${TELEGRAM_TOKEN}/sendMessage`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": data.length
+      }
+    };
+
+    const request = https.request(options, (response) => {
+      response.on("data", () => {}); // 蹇界暐杩斿洖鍐呭
+    });
+
+    request.on("error", (error) => {
+      console.error(error);
+    });
+
+    request.write(data);
+    request.end();
   }
 
   res.status(200).json({ ok: true });
